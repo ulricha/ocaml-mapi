@@ -63,6 +63,30 @@ CAMLprim value mapi_connect_stub_bc(value *argv, int argn)
     return (value) conn;
 }
 
+CAMLprim value mapi_destroy_stub(value conn)
+{
+    MapiMsg msg = mapi_destroy((Mapi) conn);
+    return Val_int(index_of_msg(msg));
+}
+
+CAMLprim value mapi_disconnect_stub(value conn)
+{
+    MapiMsg msg = mapi_disconnect((Mapi) conn);
+    return Val_int(index_of_msg(msg));
+}
+
+CAMLprim value mapi_reconnect_stub(value conn)
+{
+    MapiMsg msg = mapi_reconnect((Mapi) conn);
+    return Val_int(index_of_msg(msg));
+}
+
+CAMLprim value mapi_ping_stub(value conn)
+{
+    MapiMsg msg = mapi_ping((Mapi) conn);
+    return Val_int(index_of_msg(msg));
+}
+
 CAMLprim value mapi_error_stub(value conn)
 {
     MapiMsg msg = mapi_error((Mapi) conn);
@@ -106,9 +130,36 @@ CAMLprim value mapi_close_handle_stub(value hdl)
     return Val_int(index_of_msg(msg));
 }
 
-CAMLprim value mapi_destroy_stub(value handle)
+CAMLprim value mapi_seek_row_stub(value handle, value rownr, value whence)
 {
-    MapiMsg msg = mapi_destroy((Mapi) handle);
+    MapiMsg msg = mapi_seek_row((MapiHdl) handle, Int64_val(rownr), Int_val(whence));
     return Val_int(index_of_msg(msg));
-    
+}
+
+CAMLprim value mapi_fetch_all_rows_stub(value handle)
+{
+    mapi_int64 nr_rows = (mapi_fetch_all_rows((MapiHdl) handle));
+
+    if (nr_rows == 0) {
+	return Val_int(0);
+    } else {
+	return Val_some(caml_copy_int64(nr_rows));
+    }
+}
+
+CAMLprim value mapi_get_field_count_stub(value handle)
+{
+    return Val_int(mapi_get_field_count((MapiHdl) handle));
+}
+
+CAMLprim value mapi_get_row_count_stub(value handle)
+{
+    mapi_int64 nr_rows = mapi_get_row_count((MapiHdl) handle);
+    return caml_copy_int64(nr_rows);
+}
+
+CAMLprim value mapi_rows_affected_stub(value handle)
+{
+    mapi_int64 nr_rows = mapi_rows_affected((MapiHdl) handle);
+    return caml_copy_int64(nr_rows);
 }
