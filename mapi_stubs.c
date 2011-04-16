@@ -93,6 +93,15 @@ CAMLprim value mapi_error_stub(value conn)
     return Val_int(index_of_msg(msg));
 }
 
+CAMLprim value mapi_error_str_stub(value conn)
+{
+    return caml_copy_string(mapi_error_str((Mapi) conn));
+}
+
+CAMLprim value mapi_result_error_stub(value handle)
+{
+    return caml_copy_string(mapi_result_error((MapiHdl) handle));
+}
 
 CAMLprim value mapi_query_stub(value conn, value query)
 {

@@ -23,6 +23,8 @@ val reconnect : t -> msg
 val ping : t -> msg
 
 val error : t -> msg
+val error_str : t -> string
+val result_error : handle -> string
 
 val query : t -> string -> handle option
 val close_handle : handle -> msg
