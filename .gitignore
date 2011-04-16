@@ -1,0 +1,10 @@
+*~
+*.a
+*.o
+*.so
+*.cma
+*.cmo
+*.cmi
+*.cmxa
+*.cmx
+a.out
