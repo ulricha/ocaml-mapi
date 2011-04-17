@@ -37,4 +37,5 @@ val fetch_row : handle -> int option
 val fetch_all_rows : handle -> int64 option
 val seek_row : handle -> int64 -> whence -> msg
 val fetch_field : handle -> int -> string option
+val fetch_field_list : handle -> string list option
 

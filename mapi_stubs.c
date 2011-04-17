@@ -36,7 +36,6 @@ int index_of_msg(MapiMsg msg)
 CAMLprim value mapi_connect_stub_native(value host, value port, value user, 
 					value passwd, value lang, value db)
 {
-    puts("mapi_connect_stub_native");
     const char *host_str = String_val(host);
     const int port_i = Int_val(port);
     assert(port > 0 && port < 65536);
@@ -50,7 +49,6 @@ CAMLprim value mapi_connect_stub_native(value host, value port, value user,
 
 CAMLprim value mapi_connect_stub_bc(value *argv, int argn)
 {
-    puts("mapi_connect_stub_bc");
     assert(argn == 6);
     const char *host_str = String_val(argv[0]);
     const int port_i = Int_val(argv[1]);
@@ -171,4 +169,29 @@ CAMLprim value mapi_rows_affected_stub(value handle)
 {
     mapi_int64 nr_rows = mapi_rows_affected((MapiHdl) handle);
     return caml_copy_int64(nr_rows);
+}
+
+CAMLprim value mapi_fetch_field_list_stub(value handle)
+{
+    CAMLparam1(handle);
+    CAMLlocal2(cli, cons);
+    char **fields = mapi_fetch_field_array((MapiHdl) handle);
+    int nr_fields = mapi_get_field_count((MapiHdl) handle);
+
+    if (fields != NULL) {
+	cli = Val_emptylist;
+
+	int i = 0;
+
+	for (i = (nr_fields - 1); i >= 0; --i) {
+	    cons = caml_alloc(2, 0);
+	    Store_field(cons, 0, caml_copy_string(fields[i]));
+	    Store_field(cons, 1, cli);
+	    cli = cons;
+	}
+    
+	CAMLreturn(Val_some(cli));
+    } else {
+	CAMLreturn(Val_none);
+    }
 }
