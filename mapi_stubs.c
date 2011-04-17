@@ -195,3 +195,27 @@ CAMLprim value mapi_fetch_field_list_stub(value handle)
 	CAMLreturn(Val_none);
     }
 }
+
+CAMLprim value mapi_quote_stub(value ml_str)
+{
+    CAMLparam1(ml_str);
+    CAMLlocal1(ml_quoted_str);
+    char *s = String_val(ml_str);
+    int len = caml_string_length(ml_str);
+    char *quoted_str = mapi_quote(s, len);
+    ml_quoted_str = caml_copy_string(s);
+    free(quoted_str);
+    CAMLreturn(ml_quoted_str);
+}
+
+CAMLprim value mapi_unquote_stub(value ml_str)
+{
+    CAMLparam1(ml_str);
+    CAMLlocal1(ml_unquoted_str);
+    char *s = String_val(ml_str);
+    int len = caml_string_length(ml_str);
+    char *unquoted_str = mapi_quote(s, len);
+    ml_unquoted_str = caml_copy_string(s);
+    free(unquoted_str);
+    CAMLreturn(ml_unquoted_str);
+}

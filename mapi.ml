@@ -49,3 +49,6 @@ external fetch_field : handle -> int -> string option = "mapi_fetch_field_stub"
 external fetch_field_list : handle -> string list option = "mapi_fetch_field_list_stub"
 external close_handle : handle -> msg = "mapi_close_handle_stub"
 
+external quote : string -> string = "mapi_quote_stub"
+external unquote : string -> string = "mapi_unquote_stub"
+
