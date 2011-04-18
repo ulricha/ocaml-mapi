@@ -38,7 +38,7 @@ CAMLprim value mapi_connect_stub_native(value host, value port, value user,
 {
     const char *host_str = String_val(host);
     const int port_i = Int_val(port);
-    assert(port > 0 && port < 65536);
+    assert(port_i > 0 && port_i < 65536);
     const char *user_str = String_val(user);
     const char *passwd_str = String_val(passwd);
     const char *lang_str = String_val(lang);
