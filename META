@@ -1,0 +1,8 @@
+name = "mapi"
+version = "0.0.1"
+description = "OCaml bindings for the MonetDB Mapi library"
+license = "LGPL + OCaml linking exception"
+requires = ""
+archive(byte) = "mapi.cma"
+archive(native) = "mapi.cmxa"
+linkopts = ""
