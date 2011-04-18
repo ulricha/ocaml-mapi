@@ -44,7 +44,11 @@ CAMLprim value mapi_connect_stub_native(value host, value port, value user,
     const char *lang_str = String_val(lang);
     const char *db_str = String_val(db);
     Mapi conn = mapi_connect(host_str, port_i, user_str, passwd_str, lang_str, db_str);
-    return (value) conn;
+    if (conn) {
+	return Val_some((value) conn);
+    } else {
+	return Val_none;
+    }
 }
 
 CAMLprim value mapi_connect_stub_bc(value *argv, int argn)
@@ -58,7 +62,11 @@ CAMLprim value mapi_connect_stub_bc(value *argv, int argn)
     const char *lang_str = String_val(argv[4]);
     const char *db_str = String_val(argv[5]);
     Mapi conn = mapi_connect(host_str, port_i, user_str, passwd_str, lang_str, db_str);
-    return (value) conn;
+    if (conn) {
+	return Val_some((value) conn);
+    } else {
+	return Val_none;
+    }
 }
 
 CAMLprim value mapi_destroy_stub(value conn)
@@ -218,4 +226,17 @@ CAMLprim value mapi_unquote_stub(value ml_str)
     ml_unquoted_str = caml_copy_string(s);
     free(unquoted_str);
     CAMLreturn(ml_unquoted_str);
+}
+
+CAMLprim value mapi_get_name_stub(value ml_handle, value ml_index)
+{
+    int index = Int_val(ml_index);
+    MapiHdl handle = (MapiHdl) ml_handle;
+    assert(index < mapi_get_field_count(handle));
+    char *fname = mapi_get_name(handle, index);
+    if (fname) {
+	return Val_some(caml_copy_string(fname));
+    } else {
+	return Val_none;
+    }
 }

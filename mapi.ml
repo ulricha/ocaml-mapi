@@ -21,7 +21,7 @@ let string_of_lang = function
   | MAL -> "mal"
 
 (* connection handling *)
-external raw_connect : string -> int -> string -> string -> string -> string -> t = "mapi_connect_stub_bc" "mapi_connect_stub_native"
+external raw_connect : string -> int -> string -> string -> string -> string -> t option = "mapi_connect_stub_bc" "mapi_connect_stub_native"
 external destroy : t -> msg = "mapi_destroy_stub"
 external disconnect : t -> msg = "mapi_disconnect_stub"
 external reconnect : t -> msg = "mapi_reconnect_stub"
@@ -52,3 +52,9 @@ external close_handle : handle -> msg = "mapi_close_handle_stub"
 external quote : string -> string = "mapi_quote_stub"
 external unquote : string -> string = "mapi_unquote_stub"
 
+external field_name : handle -> int -> string option = "mapi_get_name_stub"
+
+let connection_ok conn =
+  match error conn with
+    | MOK -> true
+    | _ -> false 

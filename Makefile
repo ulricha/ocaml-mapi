@@ -72,8 +72,6 @@ install: $(DIST_FILES)  $(SO_DIST_FILES) META
 	for file in $(SO_DIST_FILES); do if [ -f $$file ]; then install -m 0755 $$file $(SO_PREFIX)/; fi; done
 	install -m 0644 META $(PREFIX)/
 uninstall:
-	#rm $(PREFIX)/*
-	#rmdir $(PREFIX)/
 	ocamlfind remove mapi
 
 .PHONY: clean cleanmli cleandoc
