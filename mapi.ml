@@ -31,8 +31,8 @@ let connect ?(host="localhost") ?(port=50000) ?(user="monetdb") ?(passwd="monetd
   raw_connect host port user passwd (string_of_lang lang) db
 
 external error : t -> msg = "mapi_error_stub"
-external error_str : t -> string = "mapi_error_str_stub"
-external result_error : handle -> string = "mapi_result_error_stub"
+external error_str : t -> string option = "mapi_error_str_stub"
+external result_error : handle -> string option = "mapi_result_error_stub"
 
 (* query functions *)
 external query : t -> string -> handle option = "mapi_query_stub"

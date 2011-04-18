@@ -101,12 +101,22 @@ CAMLprim value mapi_error_stub(value conn)
 
 CAMLprim value mapi_error_str_stub(value conn)
 {
-    return caml_copy_string(mapi_error_str((Mapi) conn));
+    char *error_str = mapi_error_str((Mapi) conn);
+    if (error_str) {
+	return caml_copy_string(error_str);
+    } else {
+	return caml_copy_string("");
+    }
 }
 
 CAMLprim value mapi_result_error_stub(value handle)
 {
-    return caml_copy_string(mapi_result_error((MapiHdl) handle));
+    char *error_str = mapi_result_error((MapiHdl) handle);
+    if (error_str) {
+	return caml_copy_string(error_str);
+    } else {
+	return caml_copy_string("");
+    }
 }
 
 CAMLprim value mapi_query_stub(value conn, value query)
@@ -147,7 +157,8 @@ CAMLprim value mapi_close_handle_stub(value hdl)
 
 CAMLprim value mapi_seek_row_stub(value handle, value rownr, value whence)
 {
-    MapiMsg msg = mapi_seek_row((MapiHdl) handle, Int64_val(rownr), Int_val(whence));
+    mapi_int64 i = Int64_val(rownr);
+    MapiMsg msg = mapi_seek_row((MapiHdl) handle, i, Int_val(whence));
     return Val_int(index_of_msg(msg));
 }
 
