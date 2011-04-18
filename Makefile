@@ -1,34 +1,87 @@
-MONET_PREFIX= /usr/local/monetdb
-INSTALL_DIR= /opt/godi/lib/ocaml/site-lib
+#  Copyright (C) 2010  Florent Monnier
+#  Contact:  <fmonnier(AT-SIGN)linux-nantes(DOT-ORG)>
+#  This file is distributed under the terms of the GNU Lesser General Public
+#  License, with the special exception on linking described in file LICENSE.txt
 
-all: mapi.cma mapi.cmxa
+OCAMLC := ocamlc.opt -g
+OCAMLOPT := ocamlopt.opt -g
+OCAMLMKLIB := ocamlmklib
+OCAMLDOC := ocamldoc.opt
+OCAML_PATH := /opt/godi/lib/ocaml/site-lib/
+MAPI_LIBS := -lmapi
+MAPI_DIR := mapi
+PREFIX := $(OCAML_PATH)/$(MAPI_DIR)
+SO_PREFIX := $(PREFIX)
+#SO_PREFIX := $(OCAML_PATH)/stublibs/
+DOC_DIR := doc
+MONET_PREFIX := /usr/local/monetdb
 
-install: mapi.cma mapi.cmxa
-	mkdir -p $(INSTALL_DIR)/mapi
-	cp -a mapi.cma mapi.cmxa mapi.mli mapi.a libmapi_stubs.a mapi.cmi dllmapi_stubs.so META $(INSTALL_DIR)/mapi/
+all: cma cmxa cmxs
+byte cma: mapi.cma
+opt cmxa: mapi.cmxa
+shared cmxs: mapi.cmxs
+.PHONY: all byte cma opt cmxa
 
-mapi_stubs.o: mapi_stubs.c
-	ocamlc -c -ccopt -I$(MONET_PREFIX)/include mapi_stubs.c
+mapi.mli: mapi.ml
+	$(OCAMLC) -i $< > $@
 
 mapi.cmi: mapi.mli
-	ocamlc -c mapi.mli
-
-mapi.cmo: mapi.ml mapi.cmi
-	ocamlc -c mapi.ml
-
-dll_mapi_stubs.so: mapi_stubs.o
-	ocamlmklib -o mapi_stubs mapi_stubs.o -L$(MONET_PREFIX)/lib -lmapi
-
-mapi.cma: mapi.cmo dll_mapi_stubs.so
-	ocamlc -a -o $@ mapi.cmo -dllib -lmapi_stubs \
-		-ccopt -L$(MONET_PREFIX)/lib -cclib -lmapi
+	$(OCAMLC) -c $<
 
 mapi.cmx: mapi.ml mapi.cmi
-	ocamlopt -c mapi.ml
+	$(OCAMLOPT) -c $<
 
-mapi.cmxa: mapi.cmx dll_mapi_stubs.so
-	ocamlopt -a -o $@ mapi.cmx -cclib -lmapi_stubs \
-		-ccopt -L$(MONET_PREFIX)/lib -cclib -lmapi
+mapi.cmo: mapi.ml mapi.cmi
+	$(OCAMLC) -c $<
 
+mapi_stubs.o: mapi_stubs.c
+	$(OCAMLC) -c -ccopt -I$(MONET_PREFIX)/include $<
+
+dllmapi_stubs.so libmapi_stubs.a: mapi_stubs.o
+	$(OCAMLMKLIB) -oc mapi_stubs -L$(MONET_PREFIX)/lib $(MAPI_LIBS) $< 
+
+mapi.cmxa mapi.a: mapi.cmx dllmapi_stubs.so
+	$(OCAMLMKLIB) -o mapi -L. -L$(MONET_PREFIX)/lib $(MAPI_LIBS) -ccopt -lmapi_stubs $< 
+
+mapi.cma: mapi.cmo  dllmapi_stubs.so
+	$(OCAMLC) -a -o $@ -ccopt $(MAPI_LIBS) -dllib -lmapi_stubs $<
+
+mapi.cmxs: mapi.cmxa
+	$(OCAMLOPT) -shared -linkall -o $@ $<
+
+DIST_FILES=           \
+    libmapi_stubs.a   \
+    mapi.a            \
+    mapi.o            \
+    mapi.cma          \
+    mapi.cmi          \
+    mapi.cmo          \
+    mapi.cmx          \
+    mapi.cmxa         \
+    mapi.ml           \
+#EOL
+SO_DIST_FILES=        \
+    dllmapi_stubs.so  \
+    mapi.cmxs         \
+#EOL
+
+.PHONY: install uninstall
+install: $(DIST_FILES)  $(SO_DIST_FILES) META
+	if [ ! -d $(PREFIX) ]; then install -d $(PREFIX) ; fi
+	for file in $(DIST_FILES);    do if [ -f $$file ]; then install -m 0644 $$file $(PREFIX)/; fi; done
+	for file in $(SO_DIST_FILES); do if [ -f $$file ]; then install -m 0755 $$file $(SO_PREFIX)/; fi; done
+	install -m 0644 META $(PREFIX)/
+uninstall:
+	#rm $(PREFIX)/*
+	#rmdir $(PREFIX)/
+	ocamlfind remove mapi
+
+.PHONY: clean cleanmli cleandoc
 clean:
-	rm -f *.cmi *.cmo *.so *.cma *.o *.a *.cmxa *.cma *.cmx
+	rm -f *.[oa] *.cm[ioxa] *.{so,cmxa,cmxs} *.{opt,byte}
+cleanmli:
+	rm -f mapi.mli
+cleandoc:
+	rm -f $(DOC_DIR)/*
+	rmdir $(DOC_DIR)
+
