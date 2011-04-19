@@ -43,7 +43,7 @@ external get_row_count : handle -> int64 = "mapi_get_row_count_stub"
 external rows_affected : handle -> int64 = "mapi_rows_affected_stub"
 
 external fetch_row : handle -> int option = "mapi_fetch_row_stub"
-external fetch_all_rows : handle -> int64 option = "mapi_fetch_all_rows_stub"
+external fetch_all_rows : handle -> int64 = "mapi_fetch_all_rows_stub"
 external seek_row : handle -> int64 -> whence -> msg = "mapi_seek_row_stub"
 external fetch_field : handle -> int -> string option = "mapi_fetch_field_stub"
 external fetch_field_list : handle -> string list option = "mapi_fetch_field_list_stub"

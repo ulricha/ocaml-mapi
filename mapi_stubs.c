@@ -165,12 +165,7 @@ CAMLprim value mapi_seek_row_stub(value handle, value rownr, value whence)
 CAMLprim value mapi_fetch_all_rows_stub(value handle)
 {
     mapi_int64 nr_rows = (mapi_fetch_all_rows((MapiHdl) handle));
-
-    if (nr_rows == 0) {
-	return Val_int(0);
-    } else {
-	return Val_some(caml_copy_int64(nr_rows));
-    }
+    return caml_copy_int64(nr_rows);
 }
 
 CAMLprim value mapi_get_field_count_stub(value handle)
